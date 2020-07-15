@@ -4,29 +4,24 @@ import Card from '../components/Card'
 import Search from '../components/Search'
 
 
-
-const spinner = <p>LOADING...</p>
-
 class List extends Component {
     constructor() {
         super()
         this.state = {
             data: [],
             search: '',
-            loading: true
         }
 
         this.handleChange = this.handleChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     handleChange(e) {
         this.setState({ search : e.target.value});
     }
 
-
-    async componentDidMount(){
-
-        const url = 'https://movie-database-imdb-alternative.p.rapidapi.com/?page=1&r=json&s=Avengers Endgame'
+    async fetchData(query){
+        const url = `https://movie-database-imdb-alternative.p.rapidapi.com/?page=1&r=json&s=${query}`
        
         await fetch(url, {
             headers: {
@@ -37,26 +32,29 @@ class List extends Component {
         })
         .then(response => response.json())
         .then(data =>  this.setState({
-            data: data.Search,
-            loading: false
-        }))   
+            data: data.Search
+        }))      
+    }
+
+    handleSubmit() {
+        this.fetchData(this.state.search)
+        this.setState({ search : ''});  
     }
 
     render(){
        
-        const {data, loading, search } = this.state
+        const {data, search } = this.state
        
-        if(loading) return spinner
         return (
             <React.Fragment>
                 <div>
-                    <Search handleChange={this.handleChange} />
+                    <Search handleChange={this.handleChange} handleSubmit={this.handleSubmit} />
                     {search}
                 </div>
 
                 <div>
-                {data.map(movie => (
-                        <Card key={movie.imdbID} movie={movie}/>
+                {!data ? 'No data' : data.map(movie => (
+                    <Card key={movie.imdbID} movie={movie}/>
                 ))}
                 </div>
             </React.Fragment>

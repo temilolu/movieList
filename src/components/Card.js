@@ -5,7 +5,9 @@ const Card = ({movie}) => {
     return (
         <div>
             <p>{Title}</p>
-
+            <p>{imdbID}</p>
+            <img src={Poster} alt={Title}/>
+            <p>{year}</p>
         </div>
     );
 };
